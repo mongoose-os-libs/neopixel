@@ -20,58 +20,36 @@ let NeoPixel = {
   // strip.show();
   // ```
   create: function(pin, numPixels, order) {
-    GPIO.set_mode(pin, GPIO.MODE_OUTPUT);
-    GPIO.write(pin, 0);  // Keep in reset.
-    let s = Object.create({
-      pin: pin,
-      len: numPixels * 3,
-      // Note: memory allocated here is currently not released.
-      // This should be ok for now, we don't expect strips to be re-created.
-      data: Sys.malloc(numPixels * 3),
-      order: order,
-      setPixel: NeoPixel.set,
+    return Object.create({
+      _i: NeoPixel._c(pin, numPixels, order),
+
+      setPixel: NeoPixel.setPixel,
       clear: NeoPixel.clear,
       show: NeoPixel.show,
     });
-    s.clear();
-    return s;
   },
 
   // ## **`strip.setPixel(i, r, g, b)`**
   // Set i-th's pixel's RGB value.
   // Note that this only affects in-memory value of the pixel.
-  set: function(i, r, g, b) {
-    let v0, v1, v2;
-    if (this.order === NeoPixel.RGB) {
-      v0 = r; v1 = g; v2 = b;
-    } else if (this.order === NeoPixel.GRB) {
-      v0 = g; v1 = r; v2 = b;
-    } else if (this.order === NeoPixel.BGR) {
-      v0 = b; v1 = g; v2 = r;
-    } else {
-      return;
-    }
-    this.data[i * 3] = v0;
-    this.data[i * 3 + 1] = v1;
-    this.data[i * 3 + 2] = v2;
+  setPixel: function(i, r, g, b) {
+    NeoPixel._set(this._i, i, r, g, b);
   },
 
   // ## **`strip.clear()`**
   // Clear in-memory values of the pixels.
   clear: function() {
-    for (let i = 0; i < this.len; i++) {
-      this.data[i] = 0;
-    }
+    NeoPixel._clear(this._i);
   },
 
   // ## **`strip.show()`**
   // Output values of the pixels.
   show: function() {
-    GPIO.write(this.pin, 0);
-    Sys.usleep(60);
-    BitBang.write(this.pin, BitBang.DELAY_100NSEC, 3, 8, 8, 6, this.data, this.len);
-    GPIO.write(this.pin, 0);
-    Sys.usleep(60);
-    GPIO.write(this.pin, 1);
+    NeoPixel._show(this._i);
   },
+
+  _c: ffi('void *mgos_neopixel_create(int, int, int)'),
+  _set: ffi('void mgos_neopixel_set(void *, int, int, int, int)'),
+  _clear: ffi('void mgos_neopixel_clear(void *)'),
+  _show: ffi('void mgos_neopixel_show(void *)'),
 };
