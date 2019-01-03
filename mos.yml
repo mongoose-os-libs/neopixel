@@ -4,16 +4,17 @@ description: Neopixel driver
 version: 1.0
 
 config_schema:
-  - ["neopixel", "o", {title: "Settings for RGB LED handling"}]
-  - ["neopixel.timing", "o", {title: "Settings for RGB LED timing"}]
-  - ["neopixel.timing.T0H", "d", 4, {title: "Settings for 0-code HIGH level time (in 100 ns)"}]
+  - ["neopixel", "o", {title: "Settings for Neopixel handling"}]
+  - ["neopixel.timing", "o", {title: "Settings for Neopixel timing"}]
+  - ["neopixel.timing.T0H", "d", 3, {title: "Settings for 0-code HIGH level time (in 100 ns)"}]
+  - ["neopixel.timing.T0L", "d", 8, {title: "Settings for 0-code LOW level time (in 100 ns)"}]
   - ["neopixel.timing.T1H", "d", 8, {title: "Settings for 1-code HIGH level time (in 100 ns)"}]
-  - ["neopixel.timing.T0L", "d", 9, {title: "Settings for 0-code LOW level time (in 100 ns)"}]
-  - ["neopixel.timing.T1L", "d", 5, {title: "Settings for 1-code LOW level time (in 100 ns)"}]
-  - ["neopixel.timing.RES", "d", 65, {title: "Settings for reset time (in microseconds)"}]
+  - ["neopixel.timing.T1L", "d", 6, {title: "Settings for 1-code LOW level time (in 100 ns)"}]
+  - ["neopixel.timing.RES", "d", 60, {title: "Settings for reset time (in microseconds)"}]
 
 sources:
   - src
+
 includes:
   - include
 

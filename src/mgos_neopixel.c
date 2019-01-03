@@ -24,6 +24,7 @@
 #include "mgos_bitbang.h"
 #include "mgos_gpio.h"
 #include "mgos_system.h"
+#include "mgos_config.h"
 
 #define NUM_CHANNELS 3 /* r, g, b */
 
@@ -32,6 +33,11 @@ struct mgos_neopixel {
   int num_pixels;
   enum mgos_neopixel_order order;
   uint8_t *data;
+  uint8_t T0H;
+  uint8_t T1H;
+  uint8_t T0L;
+  uint8_t T1L;
+  uint8_t RES;
 };
 
 struct mgos_neopixel *mgos_neopixel_create(int pin, int num_pixels,
@@ -40,21 +46,21 @@ struct mgos_neopixel *mgos_neopixel_create(int pin, int num_pixels,
   /* Keep in reset */
   mgos_gpio_write(pin, 0);
 
-  int T0H = mgos_sys_config_get_rgbleds_timing_T0H();
-  int T1H = mgos_sys_config_get_rgbleds_timing_T1H();
-  int T0L = mgos_sys_config_get_rgbleds_timing_T0L();
-  int T1L = mgos_sys_config_get_rgbleds_timing_T1L();
-  int RES = mgos_sys_config_get_rgbleds_timing_RES();
+  int T0H = mgos_sys_config_get_neopixel_timing_T0H();
+  int T1H = mgos_sys_config_get_neopixel_timing_T1H();
+  int T0L = mgos_sys_config_get_neopixel_timing_T0L();
+  int T1L = mgos_sys_config_get_neopixel_timing_T1L();
+  int RES = mgos_sys_config_get_neopixel_timing_RES();
 
   struct mgos_neopixel *np = calloc(1, sizeof(*np));
   np->pin = pin;
   np->num_pixels = num_pixels;
   np->order = order;
   np->data = malloc(num_pixels * NUM_CHANNELS);
-  np->T0H = T0H > 0 ? T0H : 4;
+  np->T0H = T0H > 0 ? T0H : 3;
+  np->T0L = T0L > 0 ? T0L : 8;
   np->T1H = T1H > 0 ? T1H : 8;
-  np->T0L = T0L > 0 ? T0L : 9;
-  np->T1L = T1L > 0 ? T1L : 5;
+  np->T1L = T1L > 0 ? T1L : 6;
   np->RES = RES > 0 ? RES : 60;
 
   mgos_neopixel_clear(np);
