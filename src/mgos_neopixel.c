@@ -40,11 +40,23 @@ struct mgos_neopixel *mgos_neopixel_create(int pin, int num_pixels,
   /* Keep in reset */
   mgos_gpio_write(pin, 0);
 
+  int T0H = mgos_sys_config_get_rgbleds_timing_T0H();
+  int T1H = mgos_sys_config_get_rgbleds_timing_T1H();
+  int T0L = mgos_sys_config_get_rgbleds_timing_T0L();
+  int T1L = mgos_sys_config_get_rgbleds_timing_T1L();
+  int RES = mgos_sys_config_get_rgbleds_timing_RES();
+
   struct mgos_neopixel *np = calloc(1, sizeof(*np));
   np->pin = pin;
   np->num_pixels = num_pixels;
   np->order = order;
   np->data = malloc(num_pixels * NUM_CHANNELS);
+  np->T0H = T0H > 0 ? T0H : 4;
+  np->T1H = T1H > 0 ? T1H : 8;
+  np->T0L = T0L > 0 ? T0L : 9;
+  np->T1L = T1L > 0 ? T1L : 5;
+  np->RES = RES > 0 ? RES : 60;
+
   mgos_neopixel_clear(np);
   return np;
 }
@@ -83,7 +95,7 @@ void mgos_neopixel_clear(struct mgos_neopixel *np) {
 void mgos_neopixel_show(struct mgos_neopixel *np) {
   mgos_gpio_write(np->pin, 0);
   mgos_usleep(60);
-  mgos_bitbang_write_bits(np->pin, MGOS_DELAY_100NSEC, 3, 8, 8, 6, np->data,
+  mgos_bitbang_write_bits(np->pin, MGOS_DELAY_100NSEC, np->T0H, np->T0L, np->T1H, np->T1L, np->data,
                           np->num_pixels * NUM_CHANNELS);
   mgos_gpio_write(np->pin, 0);
   mgos_usleep(60);
