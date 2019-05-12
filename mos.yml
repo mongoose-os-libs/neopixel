@@ -3,8 +3,18 @@ type: lib
 description: Neopixel driver
 version: 1.0
 
+config_schema:
+  - ["neopixel", "o", {title: "Settings for Neopixel handling"}]
+  - ["neopixel.T0H", "i", 4, {title: "Settings for 0-code HIGH level time (in 100 ns)"}]
+  - ["neopixel.T1H", "i", 14, {title: "Settings for 1-code HIGH level time (in 100 ns)"}]
+  - ["neopixel.T0L", "i", 14, {title: "Settings for 0-code LOW level time (in 100 ns)"}]
+  - ["neopixel.T1L", "i", 4, {title: "Settings for 1-code LOW level time (in 100 ns)"}]
+  - ["neopixel.RES", "i", 60, {title: "Settings for reset time (in microseconds)"}]
+  - ["debug.level", 3]
+  
 sources:
   - src
+
 includes:
   - include
 
