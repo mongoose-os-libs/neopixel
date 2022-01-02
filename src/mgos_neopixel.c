@@ -76,6 +76,13 @@ void mgos_neopixel_set(struct mgos_neopixel *np, int i, int r, int g, int b) {
   }
 }
 
+void mgos_neopixel_setStrip(struct mgos_neopixel *np, int r, int g, int b) {
+  for (int i = 0; i < np->num_pixels; i++)
+  {
+    mgos_neopixel_set(np, i, r, g, b); 
+  }
+}
+
 void mgos_neopixel_clear(struct mgos_neopixel *np) {
   memset(np->data, 0, np->num_pixels * NUM_CHANNELS);
 }
